@@ -15,7 +15,7 @@
 
 要使用这个模拟器，你需要做以下几步：
 
-1. 克隆这个仓库：`git clone https://github.com/Augtons/lvglsim.git`
+1. 克隆这个仓库：`git clone --recursive https://github.com/Augtons/lvglsim.git`
 2. 创建一个新的 cmake 项目并设置标准为 C++17
 3. 将这个仓库作为一个子目录添加：`add_subdirectory(lvglsim)`
 4. 为你的项目添加一个可执行文件：`add_executable(my_project main.cpp)`

@@ -15,7 +15,7 @@ A Cross-Platform Simulator for LVGL using SDL2.
 
 To use this simulator, you need to do the following steps:
 
-1. Clone this repository: `git clone https://github.com/Augtons/lvglsim.git`
+1. Clone this repository: `git clone --recursive https://github.com/Augtons/lvglsim.git`
 2. Create a new cmake project and set the standard to C++17
 3. Add this repository as a subdirectory: `add_subdirectory(lvglsim)`
 4. Add an executable for your project: `add_executable(my_project main.cpp)`
