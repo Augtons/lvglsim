@@ -26,16 +26,17 @@ That's it for the cmake part.
 Here is an example of a CMakeLists.txt file that you can use:
 
 ```cmake
-cmake_minimum_required(VERSION 3.10)
-project(my_project)
+cmake_minimum_required(VERSION 3.16)
+project(lvglsim_example)
 
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(lvglsim)
+# Fill in your lvglsim repository path here.
+add_subdirectory(<Path/to/this/repository> lvglsim)
 
-add_executable(my_project main.cpp)
-
-target_link_libraries(my_project lvglsim)
+add_executable(lvglsim_example main.cpp)
+target_link_libraries(lvglsim_example PUBLIC lvglsim)
 ```
 
 Then you need to write some example code, such as:
@@ -46,10 +47,14 @@ Then you need to write some example code, such as:
 #include "lv_examples.h"
 
 lvglsim_config on_lvglsim_config() {
-    return { 800, 480, "Test"};
+    lvglsim_config cfg = {0};
+    cfg.width = 800;
+    cfg.height = 480;
+    cfg.title = "测试";
+    return cfg;
 }
 
-extern "C" int app_main(lv_disp_t *disp) {
+int app_main(lv_disp_t *disp) {
     lvglsim_init();
     lv_example_keyboard_1();
     return 0;
