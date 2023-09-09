@@ -11,4 +11,3 @@ target_include_directories(lvglsim PRIVATE hal)
 
 target_link_libraries(lvglsim PRIVATE SDL2::SDL2main SDL2::SDL2-static)
 target_link_libraries(lvglsim PUBLIC lvgl::lvgl lvgl::examples)
-

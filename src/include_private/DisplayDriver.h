@@ -79,4 +79,3 @@ private:
 };
 
 #endif //LVGLSIM_DISPLAYDRIVER_H
-
