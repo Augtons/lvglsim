@@ -165,14 +165,24 @@ void DisplayDriver::mainLoop() {
 
     while (true) {
         while (SDL_PollEvent(&event) != 0) {
-            if (event.type == SDL_QUIT) {
-                return;
-            } else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                mousePress(x, y);
-            } else if (event.type == SDL_MOUSEBUTTONUP) {
-                mouseRelease();
+            switch (event.type) {
+                case SDL_QUIT: {
+                    return;
+                }
+                case SDL_MOUSEBUTTONUP: {
+                    mouseRelease();
+                    break;
+                }
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEMOTION: {
+                    int x, y;
+                    if (SDL_GetMouseState(&x, &y) & 0x01) {
+                        mousePress(x, y);
+                    } else {
+                        mouseRelease();
+                    }
+                    break;
+                }
             }
         }
     }
