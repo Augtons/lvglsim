@@ -46,7 +46,7 @@ void DisplayDriver::initWindow(const char* title, int width, int height) {
     }
 
     auto renderer = UniqueNativeObject<SDL_Renderer, SDL_DestroyRenderer>(
-        SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
+        SDL_CreateRenderer((SDL_Window*)window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
     );
     if (renderer == nullptr) {
         throw std::runtime_error(SDL_GetError());
@@ -64,7 +64,7 @@ void DisplayDriver::initDisplayDriver() {
         throw std::runtime_error("Please call initWindow() first");
     }
     auto texture = UniqueNativeObject<SDL_Texture, SDL_DestroyTexture>(
-        SDL_CreateTexture(main_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_TARGET, width, height)
+        SDL_CreateTexture((SDL_Renderer*)main_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_TARGET, width, height)
     );
     if (texture == nullptr) {
         throw std::runtime_error(SDL_GetError());
@@ -120,11 +120,11 @@ void DisplayDriver::flushToWindow(lv_disp_drv_t *drv, const lv_area_t *area, lv_
     }
 
     SDL_Rect rect = {area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1};
-    SDL_UpdateTexture(main_texture, &rect, buf, width * (int)sizeof(lv_color_t));
+    SDL_UpdateTexture((SDL_Texture*)main_texture, &rect, buf, width * (int)sizeof(lv_color_t));
 
     if (lv_disp_flush_is_last(drv)) {
-        SDL_RenderCopy(main_renderer, main_texture, nullptr, nullptr);
-        SDL_RenderPresent(main_renderer);
+        SDL_RenderCopy((SDL_Renderer*)main_renderer, (SDL_Texture*)main_texture, nullptr, nullptr);
+        SDL_RenderPresent((SDL_Renderer*)main_renderer);
     }
 
     lv_disp_flush_ready(drv);

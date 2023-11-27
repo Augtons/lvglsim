@@ -32,11 +32,11 @@ struct UniqueNativeObject {
         return uniquePtr == nullptr;
     }
 
-    inline operator bool() const {
+    inline explicit operator bool() const {
         return this == nullptr;
     }
 
-    inline operator T*() {
+    inline explicit operator T*() {
         return uniquePtr.get();
     }
 
