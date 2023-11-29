@@ -6,20 +6,59 @@ A Cross-Platform Simulator for LVGL using SDL2.
 
 ## Contents
 
+- [Install](#install)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 
+## Install
+
+Unlike the normal LVGL simulator, this simulator is distributed as **A Static Library**.
+You need to install this library first, and then create a new project or use the sample project below to use this library.
+
+The purpose is to **avoid repeated compilation** and **make the compiled product distributable** at will.
+
+1. **Clone this repository:**
+   ```shell
+   git clone --recursive https://github.com/Augtons/lvglsim.git
+   ```
+2. **Build and install this repository:**
+   
+   Replace `<Your Install Path>` with your path to install this library!
+   
+   ```shell
+   cmake -B ./build -DCMAKE_INSTALL_PREFIX="<Your Install Path>"
+   cmake --build ./build
+   cmake --install ./build --component lvglsim
+   ```
+
+> **Note:**
+>
+> When installing this library with cmake, what will be installed is **the export file based on the build tree**.
+> So you need to ensure that the cmake compilation intermediate folder **CAN'T be moved**.
+> 
+> The benefit of this is to avoid cumbersome dependency management
+> 
+> If you want to uninstall this library, only requires deleting the export file and deleting the cmake compilation intermediate folder
+
 ## Usage
 
 To use this simulator, you need to do the following steps:
 
-1. Clone this repository: `git clone --recursive https://github.com/Augtons/lvglsim.git`
-2. Create a new cmake project and set the standard to C++17
-3. Add this repository as a subdirectory: `add_subdirectory(lvglsim)`
-4. Add an executable for your project: `add_executable(my_project main.cpp)`
-5. Link the lvglsim library to your executable: `target_link_libraries(my_project lvglsim)`
+1. Create a new CMake C/C++ project.
+2. Find this installed library:
+   ```cmake
+   find_package(lvglsim REQUIRED)
+   ```
+3. Add an executable for your project:
+   ```cmake
+   add_executable(my_project main.cpp)
+   ```
+4. Link the lvglsim library to your executable:
+   ```cmake
+   target_link_libraries(my_project lvglsim::lvglsim)
+   ```
 
 That's it for the cmake part.
 
@@ -29,36 +68,46 @@ Here is an example of a CMakeLists.txt file that you can use:
 cmake_minimum_required(VERSION 3.16)
 project(lvglsim_example)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
-
-# Fill in your lvglsim repository path here.
-add_subdirectory(<Path/to/this/repository> lvglsim)
+# If you should add `CMAKE_PREFIX_PATH`
+# list(APPEND CMAKE_PREFIX_PATH "<Your Path>")
 
 add_executable(lvglsim_example main.cpp)
-target_link_libraries(lvglsim_example PUBLIC lvglsim)
+target_link_libraries(lvglsim_example PUBLIC lvglsim::lvglsim)
 ```
 
 Then you need to write some example code, such as:
 
 ```c
-#include "lvglsim_interface.h"
-#include "lvgl.h"
+#include "lvglsim.h"
 #include "lv_examples.h"
 
-lvglsim_config on_lvglsim_config() {
-    lvglsim_config cfg = {0};
+// DON'T USE `main()` function, because SDL2 wrapped it.
+// Please use `int app_main()`
+int app_main() {
+    // 1. Initialize the lvglsim
+    lvglsim_config_t cfg;
     cfg.width = 800;
     cfg.height = 480;
     cfg.title = "测试";
-    return cfg;
-}
 
-int app_main(lv_disp_t *disp) {
-    lvglsim_init();
+    lvglsim_init(&cfg);
+
+    // 2. Get the main display object.
+    lv_disp_t *disp = get_main_disp();
+
+    // 3. The official LVGL examples can be used directly
     lv_example_keyboard_1();
+
+    // 4. Draw your own UI like this!
+    auto slider = lv_slider_create(lv_disp_get_scr_act(disp));
+    lv_obj_set_align(slider, LV_ALIGN_TOP_MID);
+    lv_obj_set_pos(slider, 0, 100);
+
+    // 5. A return of 0 means that the initialization was successful!
+    //    Then lvglsim will be started, otherwise the program will exit with this error code.
     return 0;
 }
+
 ```
 
 This code will create a simulator window with a keyboard example from LVGL.

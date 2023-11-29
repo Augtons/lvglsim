@@ -6,62 +6,109 @@
 
 ## 目录
 
+- [安装](#安装)
 - [用法](#用法)
 - [贡献](#贡献)
 - [许可证](#许可证)
 - [致谢](#致谢)
 
+## 安装
+
+不同于一般的的 LVGL 模拟器，这个模拟器是以 **静态库 (Static Library)** 来分发的。
+你需要先安装这个库，然后创建一个新的项目或者使用下面的示例项目来使用这个库。
+
+目的是为了**避免重复编译**和**使编译的产品可以随意分发**。
+
+1. **克隆本仓库：**
+   ```shell
+   git clone --recursive https://github.com/Augtons/lvglsim.git
+   ```
+2. **编译并安装本仓库：**
+
+   把`<Your Install Path>`替换成你的安装路径！
+   ```shell
+   cmake -B ./build -DCMAKE_INSTALL_PREFIX="<Your Install Path>"
+   cmake --build ./build
+   cmake --install ./build --component lvglsim
+   ```
+
+> **注意事项:**
+> 
+> 使用cmake安装这个库时，安装的是**基于构建树的导出文件 (export file)**。
+> 所以你需要确保cmake编译中间文件夹**不被移动**。
+>
+> 这样做的好处是避免了繁琐的依赖管理
+>
+> 如果你想卸载这个库，只需要删除导出文件 (export file) 以及删除cmake编译中间文件夹
+
 ## 用法
 
 要使用这个模拟器，你需要做以下几步：
 
-1. 克隆这个仓库：`git clone --recursive https://github.com/Augtons/lvglsim.git`
-2. 创建一个新的 cmake 项目并设置标准为 C++17
-3. 将这个仓库作为一个子目录添加：`add_subdirectory(lvglsim)`
-4. 为你的项目添加一个可执行文件：`add_executable(my_project main.cpp)`
-5. 将 lvglsim 库链接到你的可执行文件：`target_link_libraries(my_project lvglsim)`
+1. 创建一个新的 CMake C/C++ 项目。
+2. 找到这个已安装的库：
+   ```cmake
+   find_package(lvglsim REQUIRED)
+   ```
+3. 为你的项目添加一个可执行文件：
+   ```cmake
+   add_executable(my_project main.cpp)
+   ```
+4. 把lvglsim库链接到你的可执行文件：
+   ```cmake
+   target_link_libraries(my_project lvglsim::lvglsim)
+   ```
 
-这就是 cmake 部分的内容。
+这就是cmake部分的内容。
 
-这里是一个 CMakeLists.txt 文件的示例，你可以使用：
+下面是一个可以使用的CMakeLists.txt文件的例子：
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
 project(lvglsim_example)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
-
-# Fill in your lvglsim repository path here.
-add_subdirectory(<Path/to/this/repository> lvglsim)
+# 如果你需要添加`CMAKE_PREFIX_PATH`
+# list(APPEND CMAKE_PREFIX_PATH "<Your Path>")
 
 add_executable(lvglsim_example main.cpp)
-target_link_libraries(lvglsim_example PUBLIC lvglsim)
+target_link_libraries(lvglsim_example PUBLIC lvglsim::lvglsim)
 ```
 
-然后你需要编写一些示例代码，例如：
+然后你需要写一些示例代码，比如：
 
 ```c
-#include "lvglsim_interface.h"
-#include "lvgl.h"
+#include "lvglsim.h"
 #include "lv_examples.h"
 
-lvglsim_config on_lvglsim_config() {
-    lvglsim_config cfg = {0};
+// 不要使用`main()`函数，因为SDL2封装了它。
+// 请使用`int app_main()`
+int app_main() {
+    // 1. 初始化lvglsim
+    lvglsim_config_t cfg;
     cfg.width = 800;
     cfg.height = 480;
     cfg.title = "测试";
-    return cfg;
-}
 
-int app_main(lv_disp_t *disp) {
-    lvglsim_init();
+    lvglsim_init(&cfg);
+
+    // 2. 获取主显示对象。
+    lv_disp_t *disp = get_main_disp();
+
+    // 3. LVGL官方的示例可以直接使用
     lv_example_keyboard_1();
+
+    // 4. 像这样绘制你自己的UI！
+    auto slider = lv_slider_create(lv_disp_get_scr_act(disp));
+    lv_obj_set_align(slider, LV_ALIGN_TOP_MID);
+    lv_obj_set_pos(slider, 0, 100);
+
+    // 5. 返回0表示初始化成功！
+    //    然后lvglsim就会启动，否则程序会以这个错误码退出。
     return 0;
 }
 ```
 
-这段代码将创建一个模拟器窗口，其中有一个来自 LVGL 的键盘示例。
+这段代码将创建一个模拟器窗口，其中有一个来自LVGL的键盘示例。
 
 ## 贡献
 
