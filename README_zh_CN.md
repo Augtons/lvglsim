@@ -25,7 +25,10 @@
    ```
 2. **编译并安装本仓库：**
 
-   把`<Your Install Path>`替换成你的安装路径！
+   把`<Your Install Path>`替换成你的**安装路径**！
+   
+   将使用默认编译器编译。
+   若要切换编译器，请自行查阅 cmake 有关资料。
    ```shell
    cmake -B ./build -DCMAKE_INSTALL_PREFIX="<Your Install Path>"
    cmake --build ./build
@@ -39,11 +42,13 @@
 >
 > 这样做的好处是避免了繁琐的依赖管理
 >
+> **卸载:**
+> 
 > 如果你想卸载这个库，只需要删除导出文件 (export file) 以及删除cmake编译中间文件夹
 
 ## 用法
 
-要使用这个模拟器，你需要做以下几步：
+要使用这个模拟器，你需要做以下几步，或者使用 **[<u>示例工程</u>](/examples)：**
 
 1. 创建一个新的 CMake C/C++ 项目。
 2. 找到这个已安装的库：
@@ -69,6 +74,8 @@ project(lvglsim_example)
 
 # 如果你需要添加`CMAKE_PREFIX_PATH`
 # list(APPEND CMAKE_PREFIX_PATH "<Your Path>")
+
+find_package(lvglsim REQUIRED)
 
 add_executable(lvglsim_example main.cpp)
 target_link_libraries(lvglsim_example PUBLIC lvglsim::lvglsim)

@@ -25,7 +25,10 @@ The purpose is to **avoid repeated compilation** and **make the compiled product
    ```
 2. **Build and install this repository:**
    
-   Replace `<Your Install Path>` with your path to install this library!
+   Replace `<Your Install Path>` with your **path to install** this library!
+   
+   Will use the default compiler.
+   To switch compilers, please refer to the cmake documentation.
    
    ```shell
    cmake -B ./build -DCMAKE_INSTALL_PREFIX="<Your Install Path>"
@@ -39,12 +42,14 @@ The purpose is to **avoid repeated compilation** and **make the compiled product
 > So you need to ensure that the cmake compilation intermediate folder **CAN'T be moved**.
 > 
 > The benefit of this is to avoid cumbersome dependency management
-> 
+>
+> **Uninstall:**
+>
 > If you want to uninstall this library, only requires deleting the export file and deleting the cmake compilation intermediate folder
 
 ## Usage
 
-To use this simulator, you need to do the following steps:
+To use this simulator, you need to do the following steps or **[<u>Example Project</u>](/examples)**:
 
 1. Create a new CMake C/C++ project.
 2. Find this installed library:
@@ -68,8 +73,10 @@ Here is an example of a CMakeLists.txt file that you can use:
 cmake_minimum_required(VERSION 3.16)
 project(lvglsim_example)
 
-# If you should add `CMAKE_PREFIX_PATH`
+# If you need add `CMAKE_PREFIX_PATH`
 # list(APPEND CMAKE_PREFIX_PATH "<Your Path>")
+
+find_package(lvglsim REQUIRED)
 
 add_executable(lvglsim_example main.cpp)
 target_link_libraries(lvglsim_example PUBLIC lvglsim::lvglsim)
