@@ -37,8 +37,8 @@
 
 > **注意事项:**
 > 
-> 使用cmake安装这个库时，安装的是**基于构建树的导出文件 (export file)**。
-> 所以你需要确保cmake编译中间文件夹**不被移动**。
+> 使用cmake安装这个库时，被安装的仅是**基于构建树的导出文件** (`lvglsimConfig.cmake`)。
+> 所以你需要确保 cmak e编译中间文件夹**不被移动** (例如上文中的 `./build` 文件夹)。
 >
 > 这样做的好处是避免了繁琐的依赖管理
 >
@@ -53,6 +53,9 @@
 1. 创建一个新的 CMake C/C++ 项目。
 2. 找到这个已安装的库：
    ```cmake
+   # 使用 `find_package`或者 `include` 你安装得到的导出文件.
+   # include(lvglsimConfig.cmake)
+   
    find_package(lvglsim REQUIRED)
    ```
 3. 为你的项目添加一个可执行文件：

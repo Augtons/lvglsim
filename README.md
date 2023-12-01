@@ -38,8 +38,8 @@ The purpose is to **avoid repeated compilation** and **make the compiled product
 
 > **Note:**
 >
-> When installing this library with cmake, what will be installed is **the export file based on the build tree**.
-> So you need to ensure that the cmake compilation intermediate folder **CAN'T be moved**.
+> When installing this library with cmake, what will be installed is **only the export file** (`lvglsimConfig.cmake`) **based on the build tree**.
+> So you need to ensure that the cmake compilation intermediate folder **CAN'T be moved** (e.g. the `./build` folder) .
 > 
 > The benefit of this is to avoid cumbersome dependency management
 >
@@ -54,6 +54,9 @@ To use this simulator, you need to do the following steps or **[<u>Example Proje
 1. Create a new CMake C/C++ project.
 2. Find this installed library:
    ```cmake
+   # Use `find_package` or `include` the export file you had installed.
+   # include(lvglsimConfig.cmake)
+   
    find_package(lvglsim REQUIRED)
    ```
 3. Add an executable for your project:
@@ -73,9 +76,11 @@ Here is an example of a CMakeLists.txt file that you can use:
 cmake_minimum_required(VERSION 3.16)
 project(lvglsim_example)
 
-# If you need add `CMAKE_PREFIX_PATH`
+# If you need add `CMAKE_PREFIX_PATH` (Optional)
 # list(APPEND CMAKE_PREFIX_PATH "<Your Path>")
 
+# Use `find_package` or `include` the export file you had installed.
+# include(lvglsimConfig.cmake)
 find_package(lvglsim REQUIRED)
 
 add_executable(lvglsim_example main.cpp)
