@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <memory>
 #include <mutex>
+#include <optional>
+#include <queue>
 #include "UniqueNativeObject.hpp"
 #include "lvgl.h"
 #include "SDL2/SDL.h"
@@ -51,11 +53,15 @@ private:
     lv_color_t *buf_1 = nullptr;
     lv_color_t *buf_2 = nullptr;
 
-    lv_indev_drv_t mouse_indev_drv = {};
-    lv_indev_t *mouse_indev;
-
+    lv_indev_drv_t mouse_indev_drv{};
+    lv_indev_t *mouse_indev = nullptr;
     std::mutex mouseInputStatusMutex;
     MouseInputStatus mouseInputStatus;
+
+    lv_indev_drv_t keyboard_indev_drv{};
+    lv_indev_t *keyboard_indev = nullptr;
+    std::mutex keyboardInputStatusMutex;
+    std::queue<SDL_Keycode> keyInputStatusQueue;
 
     UniqueNativeObject<SDL_Window, SDL_DestroyWindow> main_window;
     UniqueNativeObject<SDL_Renderer, SDL_DestroyRenderer> main_renderer;
@@ -65,16 +71,28 @@ private:
 
     void mousePress(int x, int y);
     void mouseRelease();
+    void keyDown(SDL_Keycode key);
 
     inline lv_color_t& point_at(int x, int y) {
         return buf[y * width + x];
     }
 
-    inline MouseInputStatus inputStatus() {
+    inline MouseInputStatus getMouseInputStatus() {
         mouseInputStatusMutex.lock();
         auto ret = mouseInputStatus;
         mouseInputStatusMutex.unlock();
         return ret;
+    }
+
+    inline std::optional<SDL_Keycode> fetchKeyboardCode() {
+        keyboardInputStatusMutex.lock();
+        std::optional<SDL_Keycode> key = std::nullopt;
+        if (!keyInputStatusQueue.empty()) {
+            key = keyInputStatusQueue.front();
+            keyInputStatusQueue.pop();
+        }
+        keyboardInputStatusMutex.unlock();
+        return key;
     }
 };
 

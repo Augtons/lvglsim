@@ -97,18 +97,34 @@ void DisplayDriver::initInputDriver() {
     if (!_has_inited_window) {
         throw std::runtime_error("Please call initWindow() first");
     }
+
     lv_indev_drv_init(&mouse_indev_drv);
     mouse_indev_drv.type = LV_INDEV_TYPE_POINTER;
     mouse_indev_drv.user_data = (void*)this;
-
     mouse_indev_drv.read_cb = [](lv_indev_drv_t * drv, lv_indev_data_t * data) {
         auto self = (DisplayDriver*)drv->user_data;
-        auto mouse = self->inputStatus();
+        auto mouse = self->getMouseInputStatus();
         data->state = mouse.mouse_pressed ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
         data->point.x = (lv_coord_t)mouse.mouse_x;
         data->point.y = (lv_coord_t)mouse.mouse_y;
     };
     mouse_indev = lv_indev_drv_register(&mouse_indev_drv);
+
+    lv_indev_drv_init(&keyboard_indev_drv);
+    keyboard_indev_drv.type = LV_INDEV_TYPE_KEYPAD;
+    keyboard_indev_drv.user_data = (void*)this;
+    keyboard_indev_drv.read_cb = [](lv_indev_drv_t * drv, lv_indev_data_t * data) {
+        auto self = (DisplayDriver*)drv->user_data;
+        auto key = self->fetchKeyboardCode();
+        if (key) {
+            data->state = LV_INDEV_STATE_PRESSED;
+            data->key = key.value();
+            // printf("LVGL Key Down: %c", data->key);
+        } else {
+            data->state = LV_INDEV_STATE_RELEASED;
+        }
+    };
+    keyboard_indev = lv_indev_drv_register(&keyboard_indev_drv);
 }
 
 void DisplayDriver::flushToWindow(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_p) {
@@ -144,11 +160,16 @@ void DisplayDriver::mouseRelease() {
     mouseInputStatusMutex.unlock();
 }
 
+void DisplayDriver::keyDown(SDL_Keycode key) {
+    keyboardInputStatusMutex.lock();
+    keyInputStatusQueue.push(key);
+    keyboardInputStatusMutex.unlock();
+}
+
 void DisplayDriver::mainLoop() {
     if (!_has_inited_window) {
         throw std::runtime_error("Please call lvglsim_init() first.");
     }
-    SDL_Event event;
 
     auto timer = SysTimer(10, [](uint32_t interval, void*) -> uint32_t {
         lv_tick_inc(10);
@@ -163,6 +184,7 @@ void DisplayDriver::mainLoop() {
     });
     eventThread.detach();
 
+    SDL_Event event;
     while (true) {
         while (SDL_PollEvent(&event) != 0) {
             switch (event.type) {
@@ -183,6 +205,12 @@ void DisplayDriver::mainLoop() {
                     }
                     break;
                 }
+//                case SDL_KEYDOWN: {
+//                    SDL_Keycode key = event.key.keysym.sym;
+//                    printf("KeyDown: %s", SDL_GetKeyName(key));
+//                    // keyDown(key); TODO 仅功能键
+//                    break;
+//                }
             }
         }
     }
