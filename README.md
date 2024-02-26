@@ -55,8 +55,9 @@ To use this simulator, you need to do the following steps or **[<u>Example Proje
 2. Find this installed library:
    ```cmake
    # Use `find_package` or `include` the export file you had installed.
-   # include(lvglsimConfig.cmake)
    
+   # Choose one of the following methods
+   # include(lvglsimConfig.cmake)
    find_package(lvglsim REQUIRED)
    ```
 3. Add an executable for your project:
