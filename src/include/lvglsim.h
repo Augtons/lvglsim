@@ -7,18 +7,20 @@
 extern "C" {
 #endif
 
-typedef struct lvglsim_config {
+typedef struct window_config {
     lv_coord_t width;
     lv_coord_t height;
-
     const char *title;
-} lvglsim_config_t;
+} window_config_t;
 
-void lvglsim_init(const lvglsim_config_t *config);
+uint32_t lvglsim_new_window(const window_config_t *config);
+lv_disp_t* lvglsim_get_disp(uint32_t windowId);
 
-lv_disp_t *get_main_disp();
+void lvglsim_lock();
+void lvglsim_unlock();
+bool lvglsim_try_lock();
 
-int app_main();
+int app_main(int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

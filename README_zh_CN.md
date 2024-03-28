@@ -79,6 +79,8 @@ project(lvglsim_example)
 # 如果你需要添加`CMAKE_PREFIX_PATH`
 # list(APPEND CMAKE_PREFIX_PATH "<Your Path>")
 
+# 使用 `find_package` 或者 `include` 你安装的 export 文件
+# include(lvglsimConfig.cmake)
 find_package(lvglsim REQUIRED)
 
 add_executable(lvglsim_example main.cpp)
@@ -91,29 +93,48 @@ target_link_libraries(lvglsim_example PUBLIC lvglsim::lvglsim)
 #include "lvglsim.h"
 #include "lv_examples.h"
 
+void on_click(lv_event_t* e) {
+    window_config_t cfg;
+    cfg.width = 480;
+    cfg.height = 320;
+    cfg.title = "SubWindow";
+
+    uint32_t window_id = lvglsim_new_window(&cfg);
+    lv_disp_t* sub_disp = lvglsim_get_disp(window_id);
+
+    lv_disp_set_default(sub_disp);
+    lv_example_keyboard_1();
+}
+
 // 不要使用`main()`函数，因为SDL2封装了它。
 // 请使用`int app_main()`
-int app_main() {
-    // 1. 初始化lvglsim
-    lvglsim_config_t cfg;
+int app_main(int argc, char *argv[]) {
+    // 1. 初始化 lvglsim
+    window_config_t cfg;
     cfg.width = 800;
     cfg.height = 480;
-    cfg.title = "测试";
+    cfg.title = "MainWindow";
 
-    lvglsim_init(&cfg);
-
-    // 2. 获取主显示对象。
-    lv_disp_t *disp = get_main_disp();
+    // 2. 创建窗口
+    uint32_t window_id = lvglsim_new_window(&cfg);
+    lv_disp_t* disp = lvglsim_get_disp(window_id);
 
     // 3. LVGL官方的示例可以直接使用
     lv_example_keyboard_1();
 
     // 4. 像这样绘制你自己的UI！
-    auto slider = lv_slider_create(lv_disp_get_scr_act(disp));
+    lv_obj_t* slider = lv_slider_create(lv_disp_get_scr_act(disp));
     lv_obj_set_align(slider, LV_ALIGN_TOP_MID);
     lv_obj_set_pos(slider, 0, 100);
 
-    // 5. 返回0表示初始化成功！
+    // 5. 多窗口
+    lv_obj_t* button = lv_btn_create(lv_disp_get_scr_act(disp));
+    lv_obj_set_align(button, LV_ALIGN_BOTTOM_MID);
+    lv_obj_set_pos(button, 0, -300);
+    lv_label_set_text(lv_label_create(button), "Create Window");
+    lv_obj_add_event_cb(button, on_click, LV_EVENT_CLICKED, NULL);
+
+    // 6. 返回 0 表示初始化成功！
     //    然后lvglsim就会启动，否则程序会以这个错误码退出。
     return 0;
 }
