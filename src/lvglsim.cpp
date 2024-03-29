@@ -114,7 +114,7 @@ void displays_loop()
     });
 
     std::atomic<bool> has_finished = false;
-    std::thread([&] {
+    auto lvgl_thread = std::thread([&] {
         while (!has_finished) {
             {
                 std::lock_guard locker { lock };
@@ -122,7 +122,7 @@ void displays_loop()
             }
             std::this_thread::sleep_for(5ms);
         }
-    }).detach();
+    });
 
     SDL_Event event;
 
@@ -133,15 +133,14 @@ void displays_loop()
         }
 
         if (event.type == SDL_QUIT) {
-            return;
+            break;
         }
 
         if (event.type == SDL_WINDOWEVENT) {
             if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
                 auto windowId = event.window.windowID;
                 if (windowId == main_window_id) {
-                    SDL_Quit();
-                    return;
+                    break;
                 }
                 windows.erase(windowId);
                 controller.erase(windowId);
@@ -168,6 +167,8 @@ void displays_loop()
             }
         }
     }
+    has_finished = true;
+    lvgl_thread.join();
 }
 
 int main(int argc, char *argv[]) {
