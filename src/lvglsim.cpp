@@ -1,6 +1,7 @@
 #include <memory>
 #include <queue>
 #include <functional>
+#include <thread>
 #include <any>
 #include <future>
 #include "SDL2/SDL.h"
