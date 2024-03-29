@@ -1,6 +1,6 @@
 [submodule "lvgl"]
 	path = dependencies/lvgl
 	url = https://github.com/lvgl/lvgl.git
-[submodule "sdl2"]
+[submodule "dependencies/sdl2"]
 	path = dependencies/sdl2
-	url = https://github.com/libsdl-org/SDL.git
+	url = https://github.com/Augtons/SDL.git
