@@ -12,5 +12,13 @@ add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_subdirectory(dependencies/lvgl)
-add_subdirectory(dependencies/sdl2)
+
+find_package(SDL2 CONFIG COMPONENTS SDL2 SDL2main SDL2-static)
+if(NOT SDL2_FOUND)
+  message(WARNING "SDL2 notfound in your system! SDL2 in source code will be used.")
+  add_subdirectory(dependencies/sdl2)
+else()
+  message(STATUS "SDL2 found in your system.")
+endif()
+
 add_subdirectory(src)
