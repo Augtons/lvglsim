@@ -153,6 +153,25 @@ void displays_loop()
                 controller.erase(windowId);
                 continue;
             }
+            if (event.window.event == SDL_WINDOWEVENT_EXPOSED) {
+                auto windowId = event.window.windowID;
+                auto it = windows.find(windowId);
+                if (it == windows.end()) {
+                    continue;
+                }
+                auto& [_, window_ptr] = *it;
+                auto root = lv_disp_get_scr_act(window_ptr->getDisplay());
+                // 强制刷新一次全屏 (由于 lv_refr_now() 在部分平台上仍然导致画面无变化)
+                std::lock_guard locker { lock };
+                auto root_hide = lv_obj_has_flag(root, LV_OBJ_FLAG_HIDDEN);
+                if (root_hide) {
+                    lv_obj_clear_flag(root, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_add_flag(root, LV_OBJ_FLAG_HIDDEN);
+                } else {
+                    lv_obj_add_flag(root, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_clear_flag(root, LV_OBJ_FLAG_HIDDEN);
+                }
+            }
         }
 
         if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONUP) {
