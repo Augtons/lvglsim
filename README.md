@@ -2,7 +2,7 @@
 
 Other Languages: [简体中文](README_zh_CN.md)
 
-A Cross-Platform Simulator for LVGL using SDL2.
+A Cross-Platform Simulator Library for LVGL using SDL2. Supports Multi-Window.
 
 ## Contents
 
@@ -19,7 +19,7 @@ You need to install this library first, and then create a new project or use the
 
 The purpose is to **avoid repeated compilation** and **make the compiled product distributable** at will.
 
-1. **Clone this repository:**
+1. **Clone this repository**: **Be sure to add** `--recursive` **flag !!!**
    ```shell
    git clone --recursive https://github.com/Augtons/lvglsim.git
    ```
@@ -43,6 +43,18 @@ The purpose is to **avoid repeated compilation** and **make the compiled product
 > 
 > The benefit of this is to avoid cumbersome dependency management
 >
+> **Using the System SDL2 Library:**
+> 
+> If CMake successfully locates the SDL2 library using `find_package` during the project build,
+> it will **directly use it instead of compiling from source**.
+> 
+> If you want to use an already installed SDL2 library or if you are cross-compiling this project,
+> you can specify `-DCMAKE_PREFIX_PATH=<path>` when loading the project,
+> for adding the **parent path** containing `SDL2/SDL2Config.cmake`.
+> 
+> To **force compilation of the SDL library from the source code**,
+> specify `-DUSE_SDL_FROM_SRC=ON` when loading the project
+> 
 > **Uninstall:**
 >
 > If you want to uninstall this library, only requires deleting the export file and deleting the cmake compilation intermediate folder
