@@ -142,6 +142,13 @@ void displays_loop()
                 if (windowId == main_window_id) {
                     break;
                 }
+                auto it = windows.find(windowId);
+                if (it == windows.end()) {
+                    continue;
+                }
+                auto& [_, window_ptr] = *it;
+                std::lock_guard locker { lock };
+                SDL_RestoreWindow(window_ptr->getSDLWindowPointer());  // 因为部分平台，关闭最小化窗口可能导致崩溃
                 windows.erase(windowId);
                 controller.erase(windowId);
                 continue;
