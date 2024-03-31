@@ -70,12 +70,12 @@ lvglsim::Window::~Window()
         lv_disp_remove(main_disp);
         main_disp = nullptr;
     }
+    main_texture = std::nullopt;
+    main_renderer = std::nullopt;
+    main_window = std::nullopt;
     delete[] display_buffer;
     delete[] lvgl_buffer_1;
     delete[] lvgl_buffer_2;
-    main_window = std::nullopt;
-    main_renderer = std::nullopt;
-    main_texture = std::nullopt;
 }
 
 void lvglsim::Window::flushToWindow(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_p) {
