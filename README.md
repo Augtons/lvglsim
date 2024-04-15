@@ -36,15 +36,13 @@ The purpose is to **avoid repeated compilation** and **make the compiled product
    cmake --install ./build --component lvglsim
    ```
 
-> **Note:**
->
+> [!IMPORTANT]
 > When installing this library with cmake, what will be installed is **only the export file** (`lvglsimConfig.cmake`) **based on the build tree**.
 > So you need to ensure that the cmake compilation intermediate folder **CAN'T be moved** (e.g. the `./build` folder) .
 > 
 > The benefit of this is to avoid cumbersome dependency management
->
-> **Using the System SDL2 Library:**
-> 
+
+> [!TIP]
 > If CMake successfully locates the SDL2 library using `find_package` during the project build,
 > it will **directly use it instead of compiling from source**.
 > 
@@ -54,9 +52,8 @@ The purpose is to **avoid repeated compilation** and **make the compiled product
 > 
 > To **force compilation of the SDL library from the source code**,
 > specify `-DUSE_SDL_FROM_SRC=ON` when loading the project
-> 
-> **Uninstall:**
->
+
+> [!NOTE]
 > If you want to uninstall this library, only requires deleting the export file and deleting the cmake compilation intermediate folder
 
 ## Usage

@@ -35,25 +35,22 @@
    cmake --install ./build --component lvglsim
    ```
 
-> **注意事项:**
-> 
+> [!IMPORTANT]
 > 使用cmake安装这个库时，被安装的仅是**基于构建树的导出文件** (`lvglsimConfig.cmake`)。
 > 所以你需要确保 cmake 编译中间文件夹**不被移动** (例如上文中的 `./build` 文件夹)。
 >
 > 这样做的好处是避免了繁琐的依赖管理
->
-> **使用系统 SDL2 库:**
-> 
-> 若构建此项目时，CMake 成功使用 `find_package` 找到 SDL2 库，那么就会**直接使用而不是从源码编译**。
+
+> [!TIP]
+> 构建此项目时，若 CMake 成功使用 `find_package` 找到 SDL2 库，则**直接使用它而不是从源码编译**。
 > 
 > 如果你想使用已被安装到的 SDL2 库，或者你正在交叉编译本项目。
 > 你可以在加载项目时指定 `-DCMAKE_PREFIX_PATH=<路径>`，将包含 `SDL2/SDL2Config.cmake` 的**父路径**添加进去
 >
 > 如果想**强制编译源码中的 SDL 库**，您可在加载项目时指定 `-DUSE_SDL_FROM_SRC=ON`
-> 
-> **卸载:**
-> 
-> 如果你想卸载这个库，只需要删除导出文件 (export file) 以及删除cmake编译中间文件夹
+
+> [!NOTE]
+> 如果你想**卸载**这个库，只需要删除导出文件 (export file) 以及删除cmake编译中间文件夹
 
 ## 用法
 
